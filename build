@@ -1,0 +1,4 @@
+#!/bin/bash
+
+silver -o lambdacalc.jar -I grammars $@ edu:umn:cs:melt:lambdacalc:driver
+
