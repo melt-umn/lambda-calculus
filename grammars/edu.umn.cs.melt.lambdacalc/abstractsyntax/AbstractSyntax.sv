@@ -5,7 +5,7 @@ imports silver:langutil:pp;
 
 synthesized attribute freeVars::[String];
 
-nonterminal Term with location, pp, freeVars;
+nonterminal Term with pp, freeVars;
 
 abstract production var
 top::Term ::= id::String
