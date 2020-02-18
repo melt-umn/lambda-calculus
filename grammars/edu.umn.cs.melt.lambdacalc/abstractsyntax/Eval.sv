@@ -2,10 +2,9 @@ grammar edu:umn:cs:melt:lambdacalc:abstractsyntax;
 
 imports silver:rewrite as s;
 
--- Rewrite rules from Stratego tutorial slides
--- http://ftp.strategoxt.org/pub/stratego/archive/doc/TutorialSlides.ps
+-- Rewrite rules from Building Interpreters with Rewriting Strategies (Dolstra and Visser 2002)
 
--- Alpha reduction with explicit substitution
+-- Alpha reduction with explicit substitution (for reference, not used here)
 global alpha::s:Strategy =
   rule on Term of
   | abs(x, e) -> let y::String = freshVar() in abs(y, letT(x, var(y), e)) end
@@ -17,7 +16,7 @@ global beta::s:Strategy =
   | app(abs(x, e1), e2) -> letT(x, e2, e1)
   end;
 
--- Eta reduction
+-- Eta reduction (for reference, not used here)
 global eta::s:Strategy =
   rule on Term of
   | abs(x, app(e, var(y)))
@@ -25,114 +24,50 @@ global eta::s:Strategy =
   end;
 
 -- Let distribution
-global letVar::s:Strategy =
+global subsVar::s:Strategy =
   rule on Term of
   | letT(x, e, var(y)) when x == y -> e
   | letT(x, e, var(y)) -> var(y)
   end;
 
-global letApp::s:Strategy =
+global subsApp::s:Strategy =
   rule on Term of
   | letT(x, e0, app(e1, e2)) -> app(letT(x, e0, e1), letT(x, e0, e2))
   end;
 
-global letAbs::s:Strategy =
+global subsAbs::s:Strategy =
   rule on Term of
   | letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2)
   | letT(x, e1, abs(y, e2)) ->
     let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
   end;
 
--- Let optimization
-global letEta::s:Strategy =
-  rule on Term of
-  | letT(x, e, e1) when !containsBy(stringEq, x, e1.freeVars) -> e1
-  end;
+-- Full eager evaluation, including reduction inside lambdas
+global evalInnermost::s:Strategy =
+  s:innermost(beta <+ subsVar <+ subsApp <+ subsAbs);
 
-global letId::s:Strategy =
-  rule on Term of
-  | letT(x, var(y), e) when x == y -> e
-  end;
+-- Eager evaluation (call by value)
+global evalEager::s:Strategy =
+  s:try(traverse app(evalEager, evalEager) <+ traverse letT(_, evalEager, evalEager)) <*
+  s:try((beta <+ subsVar <+ subsApp <+ subsAbs) <* evalEager);
 
-global letDown::s:Strategy =
-  rule on Term of
-  | letT(x, letT(y, e1, e2), e3) ->
-    let z::String = freshVar() in
-      letT(z, e1, letT(x, letT(y, var(z), e2), e3))
-    end
-  end;
+-- Lazy evaluation without memoization (call by name)
+global evalLazy::s:Strategy =
+  s:try(traverse app(evalLazy, _) <+ traverse letT(_, _, evalLazy)) <*
+  s:try((beta <+ subsVar <+ subsApp <+ subsAbs) <* evalLazy);
 
-global letUp::s:Strategy =
-  rule on Term of
-  | letT(x, e1, letT(y, e2, e3)) ->
-    let z::String = freshVar() in
-      letT(z, letT(x, e1, letT(y, var(z), e2)),
-              letT(x, e1, letT(y, var(z), e3)))
-    end
-  end;
+-- Fully expand all remaining lets, for clarity
+global expandSubs::s:Strategy =
+  s:innermost(subsVar <+ subsApp <+ subsAbs);
 
--- Strong normal form: all function applications have been reduced
-global isSNF::s:Strategy =
-  s:rec(\ x::s:Strategy ->
-    traverse abs(_, x) <+ traverse var(_) <+
-    s:rec(\ y::s:Strategy -> traverse app(y, x) <+ traverse var(_)));
+global eval::s:Strategy = evalInnermost <* expandSubs;
 
--- Full call-by-value: evaluate all arguments before substitution, reduce under
--- abstractions. (innermost through entire expression)
-global fullCallByValue::s:Strategy = s:innermost(beta <+ letVar <+ letApp <+ letAbs);
-
--- Strong head-normal form: all function applications have been reduced, except
--- those under abstractions
-global isSHNF::s:Strategy =
-  s:rec(\ x::s:Strategy ->
-    traverse abs(_, _) <+ traverse var(_) <+
-    s:rec(\ y::s:Strategy -> traverse app(y, x) <+ traverse var(_)));
-
--- Call-by-value: evaluate all applications, but not under abstraction
--- (innermost, except for abstractions)
-global callByValue::s:Strategy =
-  s:rec(\ x::s:Strategy ->
-    printCurrentTerm <*
-    (traverse app(x, x) <+ traverse letT(_, x, x) <+ traverse var(_) <+ traverse abs(_, _)) <*
-    s:try((beta <+ letVar <+ letApp <+ letAbs) <* x));
-
--- Weak head-normal form: all function applications have been reduced, except
--- those under abstractions and in arguments to functions
-global isWHNF :: s:Strategy =
-  s:rec(\ x::s:Strategy ->
-    traverse abs(_, _) <+ traverse var(_) <+
-    s:rec(\ y::s:Strategy -> traverse app(y, _) <+ traverse var(_)));
-
--- Call-by-name: don't evaluate function arguments and let-bound abstractions
-global callByName::s:Strategy =
-  s:rec(\ x::s:Strategy ->
-    (traverse app(x, _) <+ traverse letT(_, _, x) <+ traverse var(_) <+ traverse abs(_, _)) <*
-    s:try((beta <+ letVar <+ letApp <+ letAbs) <* x));
-
--- Lazy evaluation: don't distribute let bound expressions over applications or
--- lets unless they are evaluated (i.e., no duplication of computations.) A let
--- bound expression is forced when it is needed in an application.
-{-
-global lazyEval::s:Strategy =
-  rec(\ x::s:Strategy ->
-    (traverse app(x, _) <+ traverse letT(_, _, x) <+ traverse var(_) <+ traverse abs(_, _)) <*
-    try((beta <+ letVar <+ letAbs <+
-         (traverse Let(_, traverse Abs(_, _), _) <* (letApp <+ letUp)) <+
-         forceLet(x)) <* x));
--}
-
-global printCurrentTerm::s:Strategy =
-  rule on Term of
-  | t -> unsafeTrace(t, print(show(80, t.pp) ++ "\n", unsafeIO()))
-  end;
-
-global normalize::s:Strategy = fullCallByValue;
-
-function norm
+-- Helper functions
+function evaluate
 Term ::= t::Term
 {
   return
-    case rewriteWith(normalize, new(t)) of
+    case rewriteWith(eval, new(t)) of
     | just(t1) -> t1
     | nothing() -> error("Rewriting failed")
     end;
@@ -143,3 +78,9 @@ String ::=
 {
   return "a" ++ toString(genInt());
 }
+
+-- Helper strategy for debugging or visualizing the rewriting process
+global printCurrentTerm::s:Strategy =
+  rule on Term of
+  | t -> unsafeTrace(t, print(show(80, t.pp) ++ "\n", unsafeIO()))
+  end;

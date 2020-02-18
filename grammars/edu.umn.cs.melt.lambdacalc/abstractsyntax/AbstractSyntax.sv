@@ -40,6 +40,7 @@ top::Term ::= t1::Term t2::Term
   top.freeVars = unionBy(stringEq, t1.freeVars, t2.freeVars);
 }
 
+-- Named "letT" to avoid conflicting with Silver let keyword
 abstract production letT
 top::Term ::= id::String t::Term body::Term
 {

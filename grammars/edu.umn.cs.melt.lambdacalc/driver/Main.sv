@@ -33,7 +33,7 @@ IOVal<Integer> ::= args::[String] ioIn::IO
         } else {
           ast::Term = result.parseTree.ast;
           printM(show(80, ast.pp) ++ "\n\n");
-          printM(show(80, norm(ast).pp) ++ "\n");
+          printM(show(80, evaluate(ast).pp) ++ "\n");
           return 0;
         }
       }
