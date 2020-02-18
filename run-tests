@@ -1,0 +1,16 @@
+#!/bin/bash
+
+TESTS="*.lambda"
+
+for prog in $TESTS
+do
+    echo "Testing $prog"
+    java -jar lambdacalc.jar $prog
+    status=$?
+    echo "exit code $status"
+    if [[ $status != 0 ]]
+    then
+        exit $status
+    fi
+    echo ""
+done
