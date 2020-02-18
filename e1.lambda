@@ -1,1 +1,2 @@
-(\x y. x) (\z. z)
+# Example of application within a lambda (will be reduced by innermost, but not by eager or lazy evaluation.)
+\x. (\y. y) x
