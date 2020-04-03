@@ -1,4 +1,4 @@
-# A term-rewriting implementation of the lambda calculus.
+# A term-rewriting implementation of the lambda calculus in Silver.
 
 This repository contains an implementation of the lambda calculus that
 uses the reflection-based term-rewriting extension to Silver.
