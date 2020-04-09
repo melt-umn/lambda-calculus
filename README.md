@@ -5,6 +5,7 @@ uses the reflection-based term-rewriting extension to Silver.
 
 ## Authors
 - Lucas Kramer, University of Minnesota, krame505@umn.edu
+  ORCID: https://orcid.org/0000-0001-6719-6894
 - Eric Van Wyk, University of Minnesota, evw@umn.edu,
   ORCID: https://orcid.org/0000-0002-5611-8687
 
