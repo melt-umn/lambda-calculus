@@ -28,7 +28,7 @@ Experiences (GPCE).  See DOI https://doi.org/10.1145/3357765.3359517.
 - Archival versions of this software are permanently available on the Data Repository of the University of Minnesota at https://doi.org/10.13020/xcfv-5k29.
 
 # Using the Software
-To see how the Silver reflection-based term rewriting features can be used, see the Silver specification in the ``grammars`` directory.  Specifically, the file ``Eval.sv`` file in the ``grammars/edu.umn.cs.melt.lambdacalc/abstractsyntax`` directory.  This material is discussed in the paper mentioned above.
+To see how the Silver reflection-based term rewriting features can be used, see the Silver specification in the ``grammars`` directory.  Specifically, the file ``Eval.sv`` in the ``grammars/edu.umn.cs.melt.lambdacalc/abstractsyntax`` directory.  This material is discussed in the paper mentioned above.
 
 A ``build`` script will create the Silver evaluation for this and the ``run-tests`` will execute it on some provided test files.
 
