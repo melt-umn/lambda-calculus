@@ -24,7 +24,7 @@ Experiences (GPCE).  See DOI https://doi.org/10.1145/3357765.3359517.
 
 ## Repositories
 - Actively-developed versions of this software are available on GitHub at https://github.com/melt-umn/rewriting-lambda-calculus
-- Archival versions of this software are permanently available on the Data Repository of the University of Minnesota at <<<insert DOI here>>>.
+- Archival versions of this software are permanently available on the Data Repository of the University of Minnesota at https://doi.org/10.13020/xcfv-5k29.
 
 # Using the Software
 To see how the Silver reflection-based term rewriting features can be used, see the Silver specification in the ``grammars`` directory.  Specifically, the file ``Eval.sv`` file in the ``grammars/edu.umn.cs.melt.lambdacalc/abstractsyntax`` directory.  This material is discussed in the paper mentioned above.
@@ -34,4 +34,4 @@ A ``build`` script will create the Silver evaluation for this and the ``run-test
 Be sure that Silver version 0.4.2 is used since it contains the new term-rewriting features used here.
 
 ## Required Software
-- Silver, https://melt.cs.umn.edu/silver, version 0.4.2
+- Silver version 0.4.2.  Availble at https://melt.cs.umn.edu/silver and archived at https://doi.org/10.13020/D6QX07.
