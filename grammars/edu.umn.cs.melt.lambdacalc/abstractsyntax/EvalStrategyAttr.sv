@@ -6,26 +6,26 @@ import core:monad;
 -- Rewrite rules from Building Interpreters with Rewriting Strategies (Dolstra and Visser 2002)
 
 -- Alpha renaming with explicit substitution (for reference, not used here)
-strategy attribute alpha =
+partial strategy attribute alpha =
   rule on Term of
   | abs(x, e) -> let y::String = freshVar() in abs(y, letT(x, var(y), e)) end
   end;
 
 -- Beta reduction with explicit substitution
-strategy attribute beta =
+partial strategy attribute beta =
   rule on Term of
   | app(abs(x, e1), e2) -> letT(x, e2, e1)
   end;
 
 -- Eta reduction (for reference, not used here)
-strategy attribute eta =
+partial strategy attribute eta =
   rule on Term of
   | abs(x, app(e, var(y)))
     when x == y && !containsBy(stringEq, x, e.freeVars) -> e
   end;
 
 -- Let distribution
-strategy attribute letDist =
+partial strategy attribute letDist =
   rule on Term of
   | letT(x, e, var(y)) when x == y -> e
   | letT(x, e, var(y)) -> var(y)
@@ -58,7 +58,7 @@ attribute alpha, beta, eta, letDist, evalInnermost, evalEager, evalLazy, elimLet
 propagate alpha, beta, eta, letDist, evalInnermost, evalEager, evalLazy, elimLets, eval on Term;
 
 -- Helper strategy for debugging or visualizing the rewriting process
-strategy attribute printCurrentTerm =
+partial strategy attribute printCurrentTerm =
   rule on Term of
   | t -> unsafeTrace(t, print(show(80, t.pp) ++ "\n", unsafeIO()))
   end;
