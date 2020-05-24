@@ -1,0 +1,2 @@
+# (((2 * 2) ^ 2) ^ 2) ^ 2 in Church numerals
+(\m n f x. (n m) f x) ((\m n f x. (n m) f x) (\f x. f (f x)) ((\m n f x. m (n f) x) (\f x. f (f x))) (\f x. f (f x))) (\f x. f (f x))
