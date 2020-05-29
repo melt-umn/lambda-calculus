@@ -13,7 +13,8 @@ uses the reflection-based term-rewriting extension to Silver.
 - Release 0.1.0: made in April, 2020
 
 ## License
-This software is in the public domain.
+This software is distributed under the GNU Lesser General Public License. See the file LICENSE for details.
+More information can be found at http://www.gnu.org/licenses/.
 
 ## Related publications
 Release 0.1.0 is discussed in the paper "Reflection of Terms in Attribute Grammars: Design and Applications" by Lucas Kramer, Ted Kaminski, and Eric Van Wyk.  At the time of release this paper has been submitted to the Journal of Computer Languages (COLA).  
