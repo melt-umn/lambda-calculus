@@ -7,8 +7,7 @@ Term ::= t::Term
   return t.eval;
   
   -- Term rewriting
-  {-
-  return
+  {-return
     case rewriteWith(eval, new(t)) of
     | just(t1) -> t1
     | nothing() -> error("Rewriting failed")

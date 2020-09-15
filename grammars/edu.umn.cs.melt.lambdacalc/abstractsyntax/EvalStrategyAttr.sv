@@ -30,14 +30,17 @@ partial strategy attribute letDist =
   | letT(x, e, var(y)) when x == y -> e
   | letT(x, e, var(y)) -> var(y)
   | letT(x, e0, app(e1, e2)) -> app(letT(x, e0, e1), letT(x, e0, e2))
-  | letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2)
+  --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Stratego version
   | letT(x, e1, abs(y, e2)) ->
     let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
+  | letT(x, _, e) when !containsBy(stringEq, x, e.freeVars) -> e -- Kiama version
   end;
 
 -- Full eager evaluation, including reduction inside lambdas
 strategy attribute evalInnermost =
   innermost(beta <+ letDist);
+strategy attribute evalOutermost =
+  outermost(beta <+ letDist);
 
 -- Eager evaluation (call by value)
 strategy attribute evalEager =
@@ -49,13 +52,10 @@ strategy attribute evalLazy =
   try(app(evalLazy, id) <+ letT(id, id, evalLazy)) <*
   try((beta <+ letDist) <* evalLazy);
 
--- Fully expand all remaining lets, for clarity
-strategy attribute elimLets = innermost(letDist);
+strategy attribute eval = evalInnermost;
 
-strategy attribute eval = evalInnermost <* elimLets;
-
-attribute alpha, beta, eta, letDist, evalInnermost, evalEager, evalLazy, elimLets, eval occurs on Term;
-propagate alpha, beta, eta, letDist, evalInnermost, evalEager, evalLazy, elimLets, eval on Term;
+attribute alpha, beta, eta, letDist, evalInnermost, evalOutermost, evalEager, evalLazy, eval occurs on Term;
+propagate alpha, beta, eta, letDist, evalInnermost, evalOutermost, evalEager, evalLazy, eval on Term;
 
 -- Helper strategy for debugging or visualizing the rewriting process
 partial strategy attribute printCurrentTerm =

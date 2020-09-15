@@ -30,14 +30,17 @@ global letDist::s:Strategy =
   | letT(x, e, var(y)) when x == y -> e
   | letT(x, e, var(y)) -> var(y)
   | letT(x, e0, app(e1, e2)) -> app(letT(x, e0, e1), letT(x, e0, e2))
-  | letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2)
+  --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Stratego version
   | letT(x, e1, abs(y, e2)) ->
     let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
+  | letT(x, _, e) when !containsBy(stringEq, x, e.freeVars) -> e -- Kiama version
   end;
 
 -- Full eager evaluation, including reduction inside lambdas
 global evalInnermost::s:Strategy =
   s:innermost(beta <+ letDist);
+global evalOutermost::s:Strategy =
+  s:outermost(beta <+ letDist);
 
 -- Eager evaluation (call by value)
 global evalEager::s:Strategy =
@@ -49,10 +52,7 @@ global evalLazy::s:Strategy =
   s:try(traverse app(evalLazy, _) <+ traverse letT(_, _, evalLazy)) <*
   s:try((beta <+ letDist) <* evalLazy);
 
--- Fully expand all remaining lets, for clarity
-global elimLets::s:Strategy = s:innermost(letDist);
-
-global eval::s:Strategy = evalInnermost <* elimLets;
+global eval::s:Strategy = evalInnermost;
 
 -- Helper strategy for debugging or visualizing the rewriting process
 global printCurrentTerm::s:Strategy =
