@@ -11,13 +11,14 @@ uses the reflection-based term-rewriting extension to Silver.
 
 ## Releases
 - Release 0.1.0: made in April, 2020
+- Release 0.1.1: made in October, 2020
 
 ## License
 This software is distributed under the GNU Lesser General Public License. See the file LICENSE for details.
 More information can be found at http://www.gnu.org/licenses/.
 
 ## Related publications
-Release 0.1.0 is discussed in the paper "Reflection of Terms in Attribute Grammars: Design and Applications" by Lucas Kramer, Ted Kaminski, and Eric Van Wyk.  At the time of release this paper has been submitted to the Journal of Computer Languages (COLA).  
+Release 0.1.1 is discussed in the paper "Reflection of Terms in Attribute Grammars: Design and Applications" by Lucas Kramer, Ted Kaminski, and Eric Van Wyk.  At the time of release this paper has been accepted in the Journal of Computer Languages (COLA).  
 
 It is an extension of ``Reflection in Attribute Grammars'' by the same
 authors, presented at the 2019 ACM SIGPLAN
@@ -29,11 +30,11 @@ Experiences (GPCE).  See DOI https://doi.org/10.1145/3357765.3359517.
 - Archival versions of this software are permanently available on the Data Repository of the University of Minnesota at https://doi.org/10.13020/xcfv-5k29.
 
 # Using the Software
-To see how the Silver reflection-based term rewriting features can be used, see the Silver specification in the ``grammars`` directory.  Specifically, the file ``Eval.sv`` in the ``grammars/edu.umn.cs.melt.lambdacalc/abstractsyntax`` directory.  This material is discussed in the paper mentioned above.
+To see how the Silver reflection-based term rewriting features can be used, see the Silver specification in the ``grammars`` directory.  Specifically, the file ``Eval.sv`` in the ``grammars/edu.umn.cs.melt.lambdacalc/termrewriting`` directory.  This material is discussed in the paper mentioned above.
 
 A ``build`` script will create the Silver evaluation for this and the ``run-tests`` will execute it on some provided test files.
 
-Be sure that Silver version 0.4.2 is used since it contains the new term-rewriting features used here.
+Be sure that Silver version 0.4.3 is used since it contains the new term-rewriting features used here.
 
 ## Required Software
-- Silver version 0.4.2.  Availble at https://melt.cs.umn.edu/silver and archived at https://doi.org/10.13020/D6QX07.
+- Silver version 0.4.3.  Availble at https://melt.cs.umn.edu/silver and archived at https://doi.org/10.13020/D6QX07.

@@ -3,6 +3,10 @@ grammar edu:umn:cs:melt:lambdacalc:concretesyntax;
 imports silver:langutil;
 imports edu:umn:cs:melt:lambdacalc:abstractsyntax;
 
+parser parse::Term_c {
+  edu:umn:cs:melt:lambdacalc:concretesyntax;
+}
+
 ignore terminal WhiteSpace_t /[\n\r\t\ ]+/;
 ignore terminal Comment_t /#.*/;
 

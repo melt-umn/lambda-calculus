@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:lambdacalc:driver;
+grammar edu:umn:cs:melt:lambdacalc:termrewriting;
 
 imports core:monad;
 imports silver:langutil;
@@ -7,17 +7,13 @@ imports silver:langutil:pp;
 imports edu:umn:cs:melt:lambdacalc:concretesyntax;
 imports edu:umn:cs:melt:lambdacalc:abstractsyntax;
 
-parser parse::Term_c {
-  edu:umn:cs:melt:lambdacalc:concretesyntax;
-}
-
 function main
 IOVal<Integer> ::= args::[String] ioIn::IO
 {
   local fileName :: String = head(args);
   local result::IOMonad<Integer> = do (bindIO, returnIO) {
     if length(args) != 1 then {
-      printM("Usage: java -jar lambdacalc.jar [file name]\n");
+      printM("Usage: java -jar termrewriting.jar [file name]\n");
       return 1;
     } else {
       isF::Boolean <- isFileM(fileName);

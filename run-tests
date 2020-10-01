@@ -1,16 +1,20 @@
 #!/bin/bash
 
+DRIVERS="*.jar"
 TESTS="*.lambda"
 
-for prog in $TESTS
+for driver in $DRIVERS
 do
-    echo "Testing $prog"
-    java -jar lambdacalc.jar $prog
-    status=$?
-    echo "exit code $status"
-    if [[ $status != 0 ]]
-    then
-        exit $status
-    fi
-    echo ""
+    for prog in $TESTS
+    do
+        echo "Testing $prog with $driver"
+        java -Xss8M -jar $driver $prog
+        status=$?
+        echo "exit code $status"
+        if [[ $status != 0 ]]
+        then
+            exit $status
+        fi
+        echo ""
+    done
 done

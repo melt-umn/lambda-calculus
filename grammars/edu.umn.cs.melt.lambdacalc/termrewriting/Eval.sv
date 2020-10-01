@@ -1,31 +1,31 @@
-grammar edu:umn:cs:melt:lambdacalc:abstractsyntax;
--- Implementation of normalization using strategy attributes
+grammar edu:umn:cs:melt:lambdacalc:termrewriting;
+-- Implementation of normalization using term rewriting library/extension
 
-import core:monad;
+imports silver:rewrite as s;
 
 -- Rewrite rules from Building Interpreters with Rewriting Strategies (Dolstra and Visser 2002)
 
 -- Alpha renaming with explicit substitution (for reference, not used here)
-partial strategy attribute alpha =
+global alpha::s:Strategy =
   rule on Term of
   | abs(x, e) -> let y::String = freshVar() in abs(y, letT(x, var(y), e)) end
   end;
 
 -- Beta reduction with explicit substitution
-partial strategy attribute beta =
+global beta::s:Strategy =
   rule on Term of
   | app(abs(x, e1), e2) -> letT(x, e2, e1)
   end;
 
 -- Eta reduction (for reference, not used here)
-partial strategy attribute eta =
+global eta::s:Strategy =
   rule on Term of
   | abs(x, app(e, var(y)))
     when x == y && !containsBy(stringEq, x, e.freeVars) -> e
   end;
 
 -- Let distribution
-partial strategy attribute letDist =
+global letDist::s:Strategy =
   rule on Term of
   | letT(x, e, var(y)) when x == y -> e
   | letT(x, e, var(y)) -> var(y)
@@ -37,30 +37,35 @@ partial strategy attribute letDist =
   end;
 
 -- Full eager evaluation, including reduction inside lambdas
-strategy attribute evalInnermost =
-  innermost(beta <+ letDist);
-strategy attribute evalOutermost =
-  outermost(beta <+ letDist);
+global evalInnermost::s:Strategy =
+  s:innermost(beta <+ letDist);
+global evalOutermost::s:Strategy =
+  s:outermost(beta <+ letDist);
 
 -- Eager evaluation (call by value)
-strategy attribute evalEager =
-  try(app(evalEager, evalEager) <+ letT(id, evalEager, evalEager)) <*
-  try((beta <+ letDist) <* evalEager);
+global evalEager::s:Strategy =
+  s:try(traverse app(evalEager, evalEager) <+ traverse letT(_, evalEager, evalEager)) <*
+  s:try((beta <+ letDist) <* evalEager);
 
 -- Lazy evaluation without memoization (call by name)
-strategy attribute evalLazy =
-  try(app(evalLazy, id) <+ letT(id, id, evalLazy)) <*
-  try((beta <+ letDist) <* evalLazy);
+global evalLazy::s:Strategy =
+  s:try(traverse app(evalLazy, _) <+ traverse letT(_, _, evalLazy)) <*
+  s:try((beta <+ letDist) <* evalLazy);
 
-strategy attribute eval = evalInnermost;
+global eval::s:Strategy = evalInnermost;
 
-attribute alpha, beta, eta, letDist, evalInnermost, evalOutermost, evalEager, evalLazy, eval occurs on Term;
-propagate alpha, beta, eta, letDist, evalInnermost, evalOutermost, evalEager, evalLazy, eval on Term;
+function evaluate
+Term ::= t::Term
+{
+  return
+    case rewriteWith(eval, new(t)) of
+    | just(t1) -> t1
+    | nothing() -> error("Rewriting failed")
+    end;
+}
 
 -- Helper strategy for debugging or visualizing the rewriting process
-partial strategy attribute printCurrentTerm =
+global printCurrentTerm::s:Strategy =
   rule on Term of
   | t -> unsafeTrace(t, print(show(80, t.pp) ++ "\n", unsafeIO()))
   end;
-attribute printCurrentTerm occurs on Term;
-propagate printCurrentTerm on Term;

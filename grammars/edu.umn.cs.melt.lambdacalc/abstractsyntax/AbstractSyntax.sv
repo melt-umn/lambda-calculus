@@ -60,3 +60,11 @@ Pair<[String] Term> ::= t::Term
     | _ -> pair([], t)
     end;
 }
+
+-- Helper function
+function freshVar
+String ::=
+{
+  return "a" ++ toString(genInt());
+}
+
