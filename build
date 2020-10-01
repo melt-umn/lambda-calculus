@@ -1,4 +1,4 @@
 #!/bin/bash
 
-silver -o termrewriting.jar -I grammars $@ edu:umn:cs:melt:lambdacalc:termrewriting
+silver -o termrewriting.jar -I grammars $@ edu:umn:cs:melt:lambdacalc:term_rewriting
 

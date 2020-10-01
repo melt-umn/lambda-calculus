@@ -33,7 +33,7 @@ catch (e) {
   melt.handle(e)
 }
 finally {
-  melt.notify(job: 'rewriting-lambda-calculus')
+  melt.notify(job: 'lambda-calculus')
 }
 } // node
 

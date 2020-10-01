@@ -1,9 +1,10 @@
-grammar edu:umn:cs:melt:lambdacalc:termrewriting;
+grammar edu:umn:cs:melt:lambdacalc:term_rewriting;
 -- Implementation of normalization using term rewriting library/extension
 
 imports silver:rewrite as s;
 
 -- Rewrite rules from Building Interpreters with Rewriting Strategies (Dolstra and Visser 2002)
+-- Alternate let-elimination rule from Kiama example (https://github.com/inkytonik/kiama/blob/master/extras/src/test/scala/org/bitbucket/inkytonik/kiama/example/lambda/Lambda.scala)
 
 -- Alpha renaming with explicit substitution (for reference, not used here)
 global alpha::s:Strategy =
@@ -30,10 +31,10 @@ global letDist::s:Strategy =
   | letT(x, e, var(y)) when x == y -> e
   | letT(x, e, var(y)) -> var(y)
   | letT(x, e0, app(e1, e2)) -> app(letT(x, e0, e1), letT(x, e0, e2))
-  --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Stratego version
+  --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Let-elimination from Stratego example
   | letT(x, e1, abs(y, e2)) ->
     let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
-  | letT(x, _, e) when !containsBy(stringEq, x, e.freeVars) -> e -- Kiama version
+  | letT(x, _, e) when !containsBy(stringEq, x, e.freeVars) -> e -- Let-elimination rule from Kiama example
   end;
 
 -- Full eager evaluation, including reduction inside lambdas
