@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:lambdacalc:term_rewriting;
+grammar edu:umn:cs:melt:lambdacalc:strategy_attributes;
 
 imports core:monad;
 imports silver:langutil;
@@ -13,7 +13,7 @@ IOVal<Integer> ::= args::[String] ioIn::IO
   local fileName :: String = head(args);
   local result::IOMonad<Integer> = do (bindIO, returnIO) {
     if length(args) != 1 then {
-      printM("Usage: java -jar term_rewriting.jar [file name]\n");
+      printM("Usage: java -jar strategy_attributes.jar [file name]\n");
       return 1;
     } else {
       isF::Boolean <- isFileM(fileName);
