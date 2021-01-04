@@ -1,6 +1,5 @@
 grammar edu:umn:cs:melt:lambdacalc:strategy_attributes;
 
-imports core:monad;
 imports silver:langutil;
 imports silver:langutil:pp;
 

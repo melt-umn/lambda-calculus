@@ -1,8 +1,6 @@
 grammar edu:umn:cs:melt:lambdacalc:strategy_attributes;
 -- Implementation of normalization using strategy attributes
 
-import core:monad;
-
 -- Rewrite rules from Building Interpreters with Rewriting Strategies (Dolstra and Visser 2002)
 -- Alternate let-elimination rule from Kiama example (https://github.com/inkytonik/kiama/blob/master/extras/src/test/scala/org/bitbucket/inkytonik/kiama/example/lambda/Lambda.scala)
 
