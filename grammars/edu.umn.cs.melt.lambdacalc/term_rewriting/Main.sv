@@ -1,6 +1,5 @@
 grammar edu:umn:cs:melt:lambdacalc:term_rewriting;
 
-imports core:monad;
 imports silver:langutil;
 imports silver:langutil:pp;
 
