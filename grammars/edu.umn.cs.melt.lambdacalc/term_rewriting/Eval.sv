@@ -22,7 +22,7 @@ global beta::s:Strategy =
 global eta::s:Strategy =
   rule on Term of
   | abs(x, app(e, var(y)))
-    when x == y && !containsBy(stringEq, x, e.freeVars) -> e
+    when x == y && !contains(x, e.freeVars) -> e
   end;
 
 -- Let distribution
@@ -34,7 +34,7 @@ global letDist::s:Strategy =
   --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Let-elimination from Stratego example
   | letT(x, e1, abs(y, e2)) ->
     let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
-  | letT(x, _, e) when !containsBy(stringEq, x, e.freeVars) -> e -- Let-elimination rule from Kiama example
+  | letT(x, _, e) when !contains(x, e.freeVars) -> e -- Let-elimination rule from Kiama example
   end;
 
 -- Full eager evaluation, including reduction inside lambdas

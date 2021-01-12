@@ -19,7 +19,7 @@ top::Term ::= id::String body::Term
 {
   local unfolded::Pair<[String] Term> = unfoldAbsVars(top);
   top.pp = pp"\${ppImplode(space(), map(text, unfolded.fst))}. ${unfolded.snd.pp}";
-  top.freeVars = removeBy(stringEq, id, body.freeVars);
+  top.freeVars = remove(id, body.freeVars);
 }
 
 abstract production app
@@ -37,7 +37,7 @@ top::Term ::= t1::Term t2::Term
       | var(_) -> t2.pp
       | _ -> parens(t2.pp)
       end]);
-  top.freeVars = unionBy(stringEq, t1.freeVars, t2.freeVars);
+  top.freeVars = union(t1.freeVars, t2.freeVars);
 }
 
 -- Named "letT" to avoid conflicting with Silver let keyword
@@ -45,7 +45,7 @@ abstract production letT
 top::Term ::= id::String t::Term body::Term
 {
   top.pp = pp"let ${text(id)} = ${t.pp} in ${body.pp}";
-  top.freeVars = unionBy(stringEq, t.freeVars, removeBy(stringEq, id, body.freeVars));
+  top.freeVars = union(t.freeVars, remove(id, body.freeVars));
 }
 
 function unfoldAbsVars

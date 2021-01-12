@@ -20,7 +20,7 @@ partial strategy attribute beta =
 partial strategy attribute eta =
   rule on Term of
   | abs(x, app(e, var(y)))
-    when x == y && !containsBy(stringEq, x, e.freeVars) -> e
+    when x == y && !contains(x, e.freeVars) -> e
   end;
 
 -- Let distribution
@@ -32,7 +32,7 @@ partial strategy attribute letDist =
   --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Stratego version
   | letT(x, e1, abs(y, e2)) ->
     let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
-  | letT(x, _, e) when !containsBy(stringEq, x, e.freeVars) -> e -- Kiama version
+  | letT(x, _, e) when !contains(x, e.freeVars) -> e -- Kiama version
   end;
 
 -- Full eager evaluation, including reduction inside lambdas
