@@ -59,7 +59,7 @@ function evaluate
 Term ::= t::Term
 {
   return
-    case rewriteWith(eval, new(t)) of
+    case s:rewriteWith(eval, new(t)) of
     | just(t1) -> t1
     | nothing() -> error("Rewriting failed")
     end;
