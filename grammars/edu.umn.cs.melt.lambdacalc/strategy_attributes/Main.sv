@@ -7,28 +7,28 @@ imports edu:umn:cs:melt:lambdacalc:concretesyntax;
 imports edu:umn:cs:melt:lambdacalc:abstractsyntax;
 
 function main
-IOVal<Integer> ::= args::[String] ioIn::IO
+IOVal<Integer> ::= args::[String] ioIn::IOToken
 {
   local fileName :: String = head(args);
-  local result::IOMonad<Integer> = do {
+  local result::IO<Integer> = do {
     if length(args) != 1 then do {
-      printM("Usage: java -jar strategy_attributes.jar [file name]\n");
+      print("Usage: java -jar strategy_attributes.jar [file name]\n");
       return 1;
     } else do {
-      isF::Boolean <- isFileM(fileName);
+      isF::Boolean <- isFile(fileName);
       if !isF then do {
-        printM("File \"" ++ fileName ++ "\" not found.\n");
+        print("File \"" ++ fileName ++ "\" not found.\n");
         return 2;
       } else do {
-        text :: String <- readFileM(fileName);
+        text :: String <- readFile(fileName);
         let result :: ParseResult<Term_c> = parse(text, fileName);
         if !result.parseSuccess then do {
-          printM(result.parseErrors ++ "\n");
+          print(result.parseErrors ++ "\n");
           return 3;
         } else do {
           let ast::Term = result.parseTree.ast;
-          printM(show(80, ast.pp) ++ "\n\n");
-          printM(show(80, evaluate(ast).pp) ++ "\n");
+          print(show(80, ast.pp) ++ "\n\n");
+          print(show(80, evaluate(ast).pp) ++ "\n");
           return 0;
         };
       };

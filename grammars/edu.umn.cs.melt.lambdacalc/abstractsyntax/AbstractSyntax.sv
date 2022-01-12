@@ -65,6 +65,6 @@ Pair<[String] Term> ::= t::Term
 function freshVar
 String ::=
 {
-  return "a" ++ toString(genInt());
+  return "a" ++ toString(genIntT());
 }
 

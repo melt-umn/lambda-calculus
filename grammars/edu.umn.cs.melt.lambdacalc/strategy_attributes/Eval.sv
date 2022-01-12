@@ -65,7 +65,7 @@ Term ::= t::Term
 -- Helper strategy for debugging or visualizing the rewriting process
 partial strategy attribute printCurrentTerm =
   rule on Term of
-  | t -> unsafeTrace(t, print(show(80, t.pp) ++ "\n", unsafeIO()))
+  | t -> unsafeTraceT(t, printT(show(80, t.pp) ++ "\n", unsafeIOT()))
   end;
 attribute printCurrentTerm occurs on Term;
 propagate printCurrentTerm on Term;
