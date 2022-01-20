@@ -68,5 +68,5 @@ Term ::= t::Term
 -- Helper strategy for debugging or visualizing the rewriting process
 global printCurrentTerm::s:Strategy =
   rule on Term of
-  | t -> unsafeTraceT(t, printT(showDoc(80, t.pp) ++ "\n", unsafeIOT()))
+  | t -> unsafeTrace(t, printT(showDoc(80, t.pp) ++ "\n", unsafeIO()))
   end;
