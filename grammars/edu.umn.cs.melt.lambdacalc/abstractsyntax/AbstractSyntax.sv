@@ -17,7 +17,7 @@ top::Term ::= id::String
 abstract production abs
 top::Term ::= id::String body::Term
 {
-  local unfolded::Pair<[String] Term> = unfoldAbsVars(top);
+  local unfolded::([String], Term) = unfoldAbsVars(top);
   top.pp = pp"\${ppImplode(space(), map(text, unfolded.fst))}. ${unfolded.snd.pp}";
   top.freeVars = remove(id, body.freeVars);
 }
@@ -49,15 +49,15 @@ top::Term ::= id::String t::Term body::Term
 }
 
 function unfoldAbsVars
-Pair<[String] Term> ::= t::Term
+([String], Term) ::= t::Term
 {
   return
     case t of
     | abs(n, body) ->
-      let rest::Pair<[String] Term> = unfoldAbsVars(body)
-      in pair(n :: rest.fst, rest.snd)
+      let rest::([String], Term) = unfoldAbsVars(body)
+      in (n :: rest.fst, rest.snd)
       end
-    | _ -> pair([], t)
+    | _ -> ([], t)
     end;
 }
 
