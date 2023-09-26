@@ -1,8 +1,6 @@
 grammar edu:umn:cs:melt:lambdacalc:strategy_attributes;
 -- Implementation of normalization using strategy attributes
 
-import core:monad;
-
 -- Rewrite rules from Building Interpreters with Rewriting Strategies (Dolstra and Visser 2002)
 -- Alternate let-elimination rule from Kiama example (https://github.com/inkytonik/kiama/blob/master/extras/src/test/scala/org/bitbucket/inkytonik/kiama/example/lambda/Lambda.scala)
 
@@ -22,7 +20,7 @@ partial strategy attribute beta =
 partial strategy attribute eta =
   rule on Term of
   | abs(x, app(e, var(y)))
-    when x == y && !containsBy(stringEq, x, e.freeVars) -> e
+    when x == y && !contains(x, e.freeVars) -> e
   end;
 
 -- Let distribution
@@ -34,7 +32,7 @@ partial strategy attribute letDist =
   --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Stratego version
   | letT(x, e1, abs(y, e2)) ->
     let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
-  | letT(x, _, e) when !containsBy(stringEq, x, e.freeVars) -> e -- Kiama version
+  | letT(x, _, e) when !contains(x, e.freeVars) -> e -- Kiama version
   end;
 
 -- Full eager evaluation, including reduction inside lambdas
@@ -67,7 +65,7 @@ Term ::= t::Term
 -- Helper strategy for debugging or visualizing the rewriting process
 partial strategy attribute printCurrentTerm =
   rule on Term of
-  | t -> unsafeTrace(t, print(show(80, t.pp) ++ "\n", unsafeIO()))
+  | t -> unsafeTrace(t, printT(show(80, t.pp) ++ "\n", unsafeIO()))
   end;
 attribute printCurrentTerm occurs on Term;
 propagate printCurrentTerm on Term;

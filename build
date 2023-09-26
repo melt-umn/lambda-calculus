@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 silver -o term_rewriting.jar -I grammars $@ edu:umn:cs:melt:lambdacalc:term_rewriting
 silver -o strategy_attributes.jar -I grammars $@ edu:umn:cs:melt:lambdacalc:strategy_attributes
 
