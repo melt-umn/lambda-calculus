@@ -8,7 +8,7 @@ imports edu:umn:cs:melt:lambdacalc:abstractsyntax;
 
 fun main IO<Integer> ::= args::[String] = do {
   if length(args) != 1 then do {
-    print("Usage: java -jar strategy_attributes.jar [file name]\n");
+    print("Usage: java -jar term_rewriting.jar [file name]\n");
     return 1;
   } else do {
     let fileName :: String = head(args);
