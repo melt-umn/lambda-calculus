@@ -48,23 +48,15 @@ top::Term ::= id::String t::Term body::Term
   top.freeVars = union(t.freeVars, remove(id, body.freeVars));
 }
 
-function unfoldAbsVars
-([String], Term) ::= t::Term
-{
-  return
-    case t of
-    | abs(n, body) ->
-      let rest::([String], Term) = unfoldAbsVars(body)
-      in (n :: rest.fst, rest.snd)
-      end
-    | _ -> ([], t)
-    end;
-}
+fun unfoldAbsVars ([String], Term) ::= t::Decorated Term =
+  case t of
+  | abs(n, body) ->
+    let rest::([String], Term) = unfoldAbsVars(body)
+    in (n :: rest.fst, rest.snd)
+    end
+  | _ -> ([], ^t)
+  end;
 
 -- Helper function
-function freshVar
-String ::=
-{
-  return "a" ++ toString(genInt());
-}
+fun freshVar String ::= = "a" ++ toString(genInt());
 

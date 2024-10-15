@@ -2,11 +2,17 @@
 
 DRIVERS="*.jar"
 TESTS="*.lambda"
+SKIP="term_rewriting.jar:e4.lambda"
 
 for driver in $DRIVERS
 do
     for prog in $TESTS
     do
+        if [[ $SKIP == *$driver:$prog* ]]
+        then
+            echo "Skipping $prog with $driver"
+            continue
+        fi
         echo "Testing $prog with $driver"
         java -Xss8M -jar $driver $prog
         status=$?

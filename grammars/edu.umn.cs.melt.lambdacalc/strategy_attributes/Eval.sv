@@ -7,32 +7,32 @@ grammar edu:umn:cs:melt:lambdacalc:strategy_attributes;
 -- Alpha renaming with explicit substitution (for reference, not used here)
 partial strategy attribute alpha =
   rule on Term of
-  | abs(x, e) -> let y::String = freshVar() in abs(y, letT(x, var(y), e)) end
+  | abs(x, e) -> let y::String = freshVar() in abs(y, letT(x, var(y), ^e)) end
   end;
 
 -- Beta reduction with explicit substitution
 partial strategy attribute beta =
   rule on Term of
-  | app(abs(x, e1), e2) -> letT(x, e2, e1)
+  | app(abs(x, e1), e2) -> letT(x, ^e2, ^e1)
   end;
 
 -- Eta reduction (for reference, not used here)
 partial strategy attribute eta =
   rule on Term of
   | abs(x, app(e, var(y)))
-    when x == y && !contains(x, e.freeVars) -> e
+    when x == y && !contains(x, e.freeVars) -> ^e
   end;
 
 -- Let distribution
 partial strategy attribute letDist =
   rule on Term of
-  | letT(x, e, var(y)) when x == y -> e
+  | letT(x, e, var(y)) when x == y -> ^e
   | letT(x, e, var(y)) -> var(y)
-  | letT(x, e0, app(e1, e2)) -> app(letT(x, e0, e1), letT(x, e0, e2))
-  --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, e2) -- Stratego version
+  | letT(x, e0, app(e1, e2)) -> app(letT(x, ^e0, ^e1), letT(x, ^e0, ^e2))
+  --| letT(x, e1, abs(y, e2)) when x == y -> abs(x, ^e2) -- Stratego version
   | letT(x, e1, abs(y, e2)) ->
-    let z::String = freshVar() in abs(z, letT(x, e1, letT(y, var(z), e2))) end
-  | letT(x, _, e) when !contains(x, e.freeVars) -> e -- Kiama version
+    let z::String = freshVar() in abs(z, letT(x, ^e1, letT(y, var(z), ^e2))) end
+  | letT(x, _, e) when !contains(x, e.freeVars) -> ^e -- Kiama version
   end;
 
 -- Full eager evaluation, including reduction inside lambdas
@@ -65,7 +65,7 @@ Term ::= t::Term
 -- Helper strategy for debugging or visualizing the rewriting process
 partial strategy attribute printCurrentTerm =
   rule on Term of
-  | t -> unsafeTrace(t, printT(show(80, t.pp) ++ "\n", unsafeIO()))
+  | t -> unsafeTrace(^t, printT(show(80, t.pp) ++ "\n", unsafeIO()))
   end;
 attribute printCurrentTerm occurs on Term;
 propagate printCurrentTerm on Term;
